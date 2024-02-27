@@ -11,7 +11,6 @@ const axios = require('axios')
 
 const userModel = require('./models/userModel')
 const productModel = require('./models/productModel')
-const userRouter = require('./routes/userRoute')
 const productRouter = require('./routes/productRoute')
 const { isAuthenticated, authorizationAdmin } = require('./middleware/auth')
 
@@ -59,11 +58,14 @@ app.post('/loginUser', async (req, res) => {
     try {
         let user = await userModel.findOne({ username });
 
-        if (!user) return res.status(400).json("Invalid username or password...");
+        if (!user) {
+            return res.render('login', { user: "User", error: 'Invalid username or password!' })
+        }
 
-        const validPassword = await bcryptjs.compare(password, user.password);
-        if (!validPassword)
-            return res.status(400).json("Invalid username or password...")
+        const validPassword = await bcryptjs.compare(password, user.password)
+        if (!validPassword) {
+            return res.render('login', { user: "User", error: 'Invalid username or password!' })
+        }
 
         req.session.username = username
         res.redirect('/home')
@@ -87,7 +89,7 @@ app.post('/register', async (req, res) => {
         user = new userModel({
             username,
             password,
-            isAdmin: true
+            isAdmin: false
         });
 
         if (!username || !password)
@@ -116,11 +118,14 @@ app.post('/loginAdmin', async (req, res) => {
     try {
         let user = await userModel.findOne({ username: username });
 
-        const validPassword = bcryptjs.compare(password, user.password)
-        if (!user || !validPassword) {
-            return res.render('login', { user: "Admin", error: 'Invalid username or password!' });
+        if (!user) {
+            return res.render('login', { user: "Admin", error: 'Invalid username or password!' })
+        }
+        const validPassword = await bcryptjs.compare(password, user.password)
+        if (!validPassword) {
+            return res.render('login', { user: "Admin", error: 'Invalid username or password!' })
         } else if (!user.isAdmin) {
-            return res.render('login', { user: "Admin", error: 'Not an admin!' });
+            return res.render('login', { user: "Admin", error: 'Not an admin!' })
         }
 
         req.session.username = username;

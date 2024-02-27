@@ -21,7 +21,7 @@
                 <% if (username) { %>
                     <div class="user-info">
                         <%= username %>
-                            <a class="gg-log-out nav-link" href="/admin"></a>
+                            <a class="gg-log-out nav-link" href="/logout"></a>
                     </div>
                     <% } else { %>
                         <a href="/admin">Login</a>
@@ -92,7 +92,7 @@
                                 <input type="number" class="form-control" id="updatePrice_<%= p._id%>">
                             </div>
                             <div class="form-label">Edit images:
-                                <input type="file" name="images" class="form-control my-3" accept="image/*" multiple
+                                <input type="file" name="images" class="form-control my-3" id="updateImages_<%= p._id%> accept="image/*" multiple
                                     required>
                             </div>
                         </div>

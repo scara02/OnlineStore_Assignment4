@@ -12,9 +12,9 @@ async function deleteProduct(id) {
 }
 
 async function update(id) {
-    const name = document.getElementById("updateName_" + id).value;
-    const desc = document.getElementById("updateDesc_" + id).value;
-    const price = document.getElementById("updatePrice_" + id).value;
+    const name = document.getElementById("updateName_" + id).value
+    const desc = document.getElementById("updateDesc_" + id).value
+    const price = document.getElementById("updatePrice_" + id).value
 
     await fetch(`/api/products/update/${id}`, {
         method: 'PUT',
