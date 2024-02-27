@@ -1,0 +1,40 @@
+.navbar {
+    padding: 20px;
+    background-color: #a9d8ffab;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+#add button {
+    background-color:#2b2c7184;
+    color: white;
+    width: 100%;
+}
+
+#add button:hover {
+    background-color:#16175284;
+}
+
+.btn-update {
+    background-color:#2b2c7184;
+    color: white;
+    width: 30%;
+}
+
+.btn-update:hover {
+    background-color:#11123b84;
+}
+
+.user-info a {
+    margin-left: 10px;
+}
+
+.list-entry {
+    color: white;
+    background-color: rgba(117, 108, 216, 0.509);
+    border: 1px solid;
+    padding: 10px;
+}
