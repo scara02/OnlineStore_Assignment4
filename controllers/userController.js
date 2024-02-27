@@ -15,7 +15,7 @@ const registerUser = async (req, res) => {
         user = new userModel({
             username,
             password,
-            isAdmin: true
+            isAdmin: false
         });
 
         if (!username || !password)
