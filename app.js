@@ -13,6 +13,7 @@ const userModel = require('./models/userModel')
 const productModel = require('./models/productModel')
 const userRouter = require('./routes/userRoute')
 const productRouter = require('./routes/productRoute')
+const { isAuthenticated, authorizationAdmin } = require('./middleware/auth')
 
 dotenv.config()
 
@@ -42,10 +43,14 @@ app.use(session({
     store: MongoStore.create({ mongoUrl })
 }))
 
-app.use('/admin', productRouter)
+app.use('/api/products', productRouter)
+app.use('/home', isAuthenticated)
+app.use('/homeRu', isAuthenticated)
+app.use('/products', isAuthenticated)
+app.use('/productsRu', isAuthenticated)
 
 app.get('/', (req, res) => {
-    res.render('login', {user: 'User'})
+    res.render('login', { user: 'User' })
 })
 
 app.post('/loginUser', async (req, res) => {
@@ -147,44 +152,54 @@ app.get('/logout', (req, res) => {
 
 app.get('/home', async (req, res) => {
     const username = req.session.username
-    const products = await productModel.find()
-    res.render('index', { username: username, products: products })
+    res.render('index', { username: username})
 })
 
 app.get('/homeRu', async (req, res) => {
     const username = req.session.username
+    res.render('indexRu', {username: username})
+})
+
+app.get('/products', async (req, res) => {
+    const username = req.session.username
+    const products = await productModel.find()
+    res.render('products', { username: username, products: products })
+})
+
+app.get('/productsRu', async (req, res) => {
+    const username = req.session.username
     let products = await productModel.find()
     let productsRu = []
 
-    const translationPromises = products.map(async p => {
+    const options = {
+        method: 'GET',
+        url: 'https://currency-converter5.p.rapidapi.com/currency/convert',
+        params: {
+            format: 'json',
+            from: 'USD',
+            to: 'RUB',
+            amount: 1
+        },
+        headers: {
+            'X-RapidAPI-Key': 'c00a089dd5mshff0fa7579cd0999p162f59jsn3428c6ae7352',
+            'X-RapidAPI-Host': 'currency-converter5.p.rapidapi.com'
+        }
+    }
+
+    let currency = await axios.request(options)
+    currency = currency.data.rates.RUB.rate_for_amount
+    const translationPromises = products.map(async (p, index) => {
         try {
             let response = await axios.post(
                 'https://translation.googleapis.com/language/translate/v2?key=AIzaSyAhXQ8SClcDvYZZz2-t98ze0TRvHFt0kdU',
-                { q: `${p.name}, ${p.description}`, target: 'ru' }
+                { q: `${p.name}; ${p.description}`, target: 'ru' }
             )
 
-            let translation = response.data.data.translations[0].translatedText.split(', ')
-
-            const options = {
-                method: 'GET',
-                url: 'https://currency-converter5.p.rapidapi.com/currency/convert',
-                params: {
-                  format: 'json',
-                  from: 'USD',
-                  to: 'RUB',
-                  amount: `${p.price}`
-                },
-                headers: {
-                  'X-RapidAPI-Key': 'c00a089dd5mshff0fa7579cd0999p162f59jsn3428c6ae7352',
-                  'X-RapidAPI-Host': 'currency-converter5.p.rapidapi.com'
-                }
-              }
-
-            let currency = await axios.request(options)
+            let translation = response.data.data.translations[0].translatedText.split('; ')
 
             let prod = {
                 name: translation[0],
-                price: Math.round(currency.data.rates.RUB.rate_for_amount),
+                price: Math.round(p.price * currency),
                 description: translation[1],
                 image: p.image
             }
@@ -194,11 +209,11 @@ app.get('/homeRu', async (req, res) => {
             console.error('Translation error:', error)
             throw error
         }
-    });
+    })
 
     try {
         productsRu = await Promise.all(translationPromises)
-        res.render('indexRu', { username: username, products: productsRu })
+        res.render('productsRu', { username: username, products: productsRu })
     } catch (error) {
         console.error('Error:', error)
         res.status(500).send('Internal Server Error')

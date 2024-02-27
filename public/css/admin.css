@@ -1,6 +1,7 @@
 .navbar {
     padding: 20px;
-    background-color: #a9d8ffab;
+    background-color: #2b2c7184;
+    color: white;
 }
 
 .user-info {
@@ -34,7 +35,11 @@
 
 .list-entry {
     color: white;
-    background-color: rgba(117, 108, 216, 0.509);
+    background-color: #2b2c7184;
     border: 1px solid;
     padding: 10px;
+}
+
+.product-images img {
+    width: 100px;
 }

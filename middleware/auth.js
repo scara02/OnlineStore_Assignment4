@@ -1,6 +1,6 @@
 const userModel = require('../models/userModel')
 
-const authenticateAdmin = async (req, res, next) => {
+const authorizationAdmin = async (req, res, next) => {
     const username = req.session.username
 
     let user = await userModel.findOne({username})
@@ -12,4 +12,12 @@ const authenticateAdmin = async (req, res, next) => {
     }
 }
 
-module.exports = { authenticateAdmin }
+const isAuthenticated = (req, res, next) => {
+    if (req.session.username) {
+        next();
+    } else {
+        res.redirect('/');
+    }
+}
+
+module.exports = { authorizationAdmin, isAuthenticated }

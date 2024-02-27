@@ -1,5 +1,5 @@
 async function deleteProduct(id) {
-        await fetch(`/admin/delete/${id}`, {
+        await fetch(`/api/products/delete/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -16,7 +16,7 @@ async function update(id) {
     const desc = document.getElementById("updateDesc_" + id).value;
     const price = document.getElementById("updatePrice_" + id).value;
 
-    await fetch(`admin/update/${id}`, {
+    await fetch(`/api/products/update/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
