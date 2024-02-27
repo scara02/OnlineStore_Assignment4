@@ -142,7 +142,7 @@ app.get('/adminPanel', async (req, res) => {
 
 app.get('/logout', (req, res) => {
     req.session.destroy()
-    res.render('login', {user: 'User'})
+    res.redirect('/')
 })
 
 app.get('/home', async (req, res) => {
